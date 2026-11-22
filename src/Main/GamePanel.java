@@ -13,8 +13,8 @@ public class GamePanel extends JPanel implements Runnable{
     final int scale = 1;
     
     public final int tileSize = originalTileSize * scale;//64x64
-    final int maxScreenColumn= 20;
-    final int maxScreenRow= 12;
+    final int maxScreenColumn= 24;//1280 px
+    final int maxScreenRow= 12;//768 px
     final int screenWidth = tileSize * maxScreenColumn;
     final int screenHeight = tileSize * maxScreenRow;
     
@@ -22,9 +22,11 @@ public class GamePanel extends JPanel implements Runnable{
     int FPS = 60;
     
     //Playerdata
-    int spd = 5;
+    int wlkspd = 5;
+    int fallspd = 5;
     int x = 100;
-    int y = 100;
+    int y = 300;
+    int jumpcount = 1;
     
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
@@ -77,39 +79,43 @@ public class GamePanel extends JPanel implements Runnable{
     
     public void update() {
         
-        if(keyH.shiftKeyPressed){
-            if(spd<10){
-                spd++;
-            }
+        if(y<500){
+            y += fallspd;
         }
-        else{
-            if(spd>5){
-                spd--;
+        
+        if(keyH.shiftKeyPressed){
+            if(wlkspd<10){
+                wlkspd++;
+            }
+        }else{
+            if(wlkspd>5){
+                wlkspd--;
             }
         }
         
-        if(keyH.upKeyPressed || keyH.downKeyPressed) {
-            
-            if(keyH.upKeyPressed && keyH.downKeyPressed) {
-                y += (spd-spd);
-            }
-            else if(keyH.downKeyPressed) {
-                y += spd;
-            }
-            else if(keyH.upKeyPressed) {
-                y -= spd;
-            }
-        }
-        else if(keyH.leftKeyPressed || keyH.rightKeyPressed) {
+        if(keyH.leftKeyPressed || keyH.rightKeyPressed) {
             if(keyH.leftKeyPressed && keyH.rightKeyPressed) {
-                x += (spd-spd);
+                x += (wlkspd-wlkspd);
             }
             else if(keyH.rightKeyPressed) {
-                x += spd;
+                x += wlkspd;
             }
             else if(keyH.leftKeyPressed) {
-                x -= spd;
+                x -= wlkspd;
             }
+        }
+        
+        if(keyH.jumpKeyPressed && y==500){
+            if(jumpcount==1){
+                for(int i=0;i<y-200;i++){
+                    y = y - fallspd;
+                    jumpcount--;
+                }
+            }
+        }
+        
+        if(jumpcount<1 && y==500){
+            jumpcount=1;
         }
     }
     
