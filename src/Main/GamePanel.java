@@ -1,5 +1,6 @@
 package Main;
 
+import Entities.Player;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -21,15 +22,9 @@ public class GamePanel extends JPanel implements Runnable{
     //FPS
     int FPS = 60;
     
-    //Playerdata
-    int wlkspd = 5;
-    int fallspd = 5;
-    int x = 100;
-    int y = 300;
-    int jumpcount = 1;
-    
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
+    Player player = new Player(this,keyH);
     
     public GamePanel() {
         
@@ -71,6 +66,10 @@ public class GamePanel extends JPanel implements Runnable{
             
             if(timer >= 1000000000){
                 System.out.println("FPS : "+ frameCount);
+                System.out.println("movement status :"+ player.movementStatus);
+                System.out.println("movement direction :"+ player.movementDirection);
+                System.out.println("position : x "+ player.x +", y "+player.y);
+                System.out.println(" ");
                 frameCount = 0;
                 timer = 0;
             }
@@ -79,44 +78,7 @@ public class GamePanel extends JPanel implements Runnable{
     
     public void update() {
         
-        if(y<500){
-            y += fallspd;
-        }
-        
-        if(keyH.shiftKeyPressed){
-            if(wlkspd<10){
-                wlkspd++;
-            }
-        }else{
-            if(wlkspd>5){
-                wlkspd--;
-            }
-        }
-        
-        if(keyH.leftKeyPressed || keyH.rightKeyPressed) {
-            if(keyH.leftKeyPressed && keyH.rightKeyPressed) {
-                x += (wlkspd-wlkspd);
-            }
-            else if(keyH.rightKeyPressed) {
-                x += wlkspd;
-            }
-            else if(keyH.leftKeyPressed) {
-                x -= wlkspd;
-            }
-        }
-        
-        if(keyH.jumpKeyPressed && y==500){
-            if(jumpcount==1){
-                for(int i=0;i<y-200;i++){
-                    y = y - fallspd;
-                    jumpcount--;
-                }
-            }
-        }
-        
-        if(jumpcount<1 && y==500){
-            jumpcount=1;
-        }
+        player.update();
     }
     
     public void paintComponent(Graphics g) {
@@ -125,7 +87,8 @@ public class GamePanel extends JPanel implements Runnable{
         
         Graphics2D g2 = (Graphics2D)g;
         
-        g2.setColor(Color.red);
-        g2.fillRect(x, y, tileSize, tileSize);
+        player.draw(g2);
+        
+        g2.dispose();
     }
 }
